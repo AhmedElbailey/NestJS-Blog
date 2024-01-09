@@ -1,4 +1,5 @@
 import { Expose } from 'class-transformer';
+import { IsOptional } from 'class-validator';
 
 export class UserDto {
   @Expose()
@@ -12,4 +13,8 @@ export class UserDto {
 
   @Expose()
   email: string;
+
+  @Expose()
+  @IsOptional()
+  access_token: string;
 }

@@ -1,7 +1,7 @@
-import { IsString } from 'class-validator';
-import { Unique } from 'typeorm';
+import { IsEmail, IsString, isStrongPassword } from 'class-validator';
+import { BeforeInsert, Unique } from 'typeorm';
 
-export class CreateuserDto {
+export class CreateUserDto {
   @IsString()
   name: string;
 
@@ -10,8 +10,9 @@ export class CreateuserDto {
   username: string;
 
   @IsString()
+  @IsEmail()
   email: string;
 
   @IsString()
-  passowrd: string;
+  password: string;
 }
