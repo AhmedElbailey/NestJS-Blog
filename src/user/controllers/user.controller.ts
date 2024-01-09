@@ -5,30 +5,37 @@ import {
   Post,
   Patch,
   Delete,
-  NotFoundException,
+  UseGuards,
+  Request,
+  ForbiddenException,
 } from '@nestjs/common';
 import { Controller } from '@nestjs/common';
 import { UserService } from '../services/user.service';
-import { CreateuserDto } from '../dtos/create-user.dto';
-import { UpdateUserDto } from '../dtos/update-user.dto';
+import { CreateUserDto } from '../dtos/create-user.dto';
+import { LoginUserDto } from '../dtos/login-user.dto';
 import { Serialize } from '../../Interceptors/serialize.interceptor';
 import { UserDto } from '../dtos/user.dto';
+import { AuthGuard } from '../../auth/auth.guard';
+import { AuthService } from '../../auth/auth.service';
+import { User } from '../models/user.entity';
 
 @Serialize(UserDto)
 @Controller('users')
 export class UserController {
-  constructor(private userService: UserService) {}
+  constructor(
+    private userService: UserService,
+    private authService: AuthService,
+  ) {}
 
-  @Post('')
-  create(@Body() body: CreateuserDto) {
-    return this.userService.create(body);
+  @Post('/signup')
+  async signup(@Body() body: CreateUserDto) {
+    const user = await this.authService.signup(body);
+    return user;
   }
 
-  @Get('/:id')
-  async findOne(@Param('id') id: string) {
-    const user = await this.userService.findById(parseInt(id));
-    if (!user) throw new NotFoundException('user not found');
-    return user;
+  @Post('/login')
+  async login(@Body() body: LoginUserDto) {
+    return this.authService.login(body.email, body.password);
   }
 
   @Get()
@@ -36,13 +43,33 @@ export class UserController {
     return this.userService.findAll();
   }
 
+  @Get('/:id')
+  @UseGuards(AuthGuard)
+  async findOne(@Param('id') id: string, @Request() req) {
+    // Authorization
+    if (req.user.id !== parseInt(id)) throw new ForbiddenException();
+
+    return req.user;
+  }
+
   @Patch('/:id')
-  updateOne(@Param('id') id: string, @Body() body: UpdateUserDto) {
+  @UseGuards(AuthGuard)
+  updateOne(
+    @Param('id') id: string,
+    @Body() body: Partial<User>,
+    @Request() req,
+  ) {
+    // Authorization
+    if (req.user.id !== parseInt(id)) throw new ForbiddenException();
+
     return this.userService.updateOne(parseInt(id), body);
   }
 
   @Delete('/:id')
-  deleteOne(@Param('id') id: string) {
+  deleteOne(@Param('id') id: string, @Request() req) {
+    // Authorization
+    if (req.user.id !== parseInt(id)) throw new ForbiddenException();
+
     return this.userService.deleteOne(parseInt(id));
   }
 }

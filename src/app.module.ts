@@ -6,9 +6,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { APP_PIPE } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
-import { MiddlewareConsumer } from '@nestjs/common';
 import { UserModule } from './user/user.module';
-const cookieSession = require('cookie-session');
+import { AuthModule } from './auth/auth.module';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -31,8 +31,17 @@ const cookieSession = require('cookie-session');
         };
       },
     }),
+    JwtModule.register({
+      global: true,
+      secret: process.env.JWT_SECRET,
+      signOptions: {
+        expiresIn: process.env.JWT_EXPIRES_IN,
+      },
+    }),
     UserModule,
+    AuthModule,
   ],
+
   controllers: [AppController],
   providers: [
     AppService,
@@ -44,16 +53,4 @@ const cookieSession = require('cookie-session');
     },
   ],
 })
-export class AppModule {
-  constructor(private configService: ConfigService) {}
-
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(
-        cookieSession({
-          keys: [this.configService.get('COOKIE_KEY')],
-        }),
-      )
-      .forRoutes('*');
-  }
-}
+export class AppModule {}
