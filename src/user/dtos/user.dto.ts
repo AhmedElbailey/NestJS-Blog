@@ -1,5 +1,6 @@
 import { Expose } from 'class-transformer';
 import { IsOptional } from 'class-validator';
+import { UserRoles } from '../models/user.entity';
 
 export class UserDto {
   @Expose()
@@ -13,6 +14,9 @@ export class UserDto {
 
   @Expose()
   email: string;
+
+  @Expose()
+  role: UserRoles;
 
   @Expose()
   @IsOptional()

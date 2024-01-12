@@ -2,15 +2,15 @@
 GET http://localhost:3000/users
 
 #### Get a specific user
-GET http://localhost:3000/users/10
+GET http://localhost:3000/users/16
 content-type: application/json
-Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsIm5hbWUiOiJBaG1lZCIsInVzZXJuYW1lIjoiRG9sYSIsImVtYWlsIjoiYWhtZWRlbGJpYWx5MTQ4QGdtYWlsLmNvbSIsImlhdCI6MTcwNDgwNDI4NiwiZXhwIjoxNzA0ODkwNjg2fQ.zFFDtZA3YXENurpabJkMnVWmBmZDkk1v5AQuB1Ohsec
+Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTYsIm5hbWUiOiJBaG1lZCIsInVzZXJuYW1lIjoiRG9sYSIsImVtYWlsIjoiYWhtZWRlbGJpYWx5MTQ4QGdtYWlsLmNvbSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzA1MDcwMTMyLCJleHAiOjE3MDUxNTY1MzJ9.QYGay59OTmmlbMMzbpYO1kfH8lAVYEhAlTQbkIRmeEA
 
 #### Delete a specific user
-DELETE http://localhost:3000/users/10
-Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsIm5hbWUiOiJBaG1lZCIsInVzZXJuYW1lIjoiRG9sYSIsImVtYWlsIjoiYWhtZWRlbGJpYWx5MTQ4QGdtYWlsLmNvbSIsImlhdCI6MTcwNDgwNDI4NiwiZXhwIjoxNzA0ODkwNjg2fQ.zFFDtZA3YXENurpabJkMnVWmBmZDkk1v5AQuB1Ohsec
+DELETE http://localhost:3000/users/15
+# Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsIm5hbWUiOiJBaG1lZCIsInVzZXJuYW1lIjoiRG9sYSIsImVtYWlsIjoiYWhtZWRlbGJpYWx5MTQ4QGdtYWlsLmNvbSIsImlhdCI6MTcwNDgwNDI4NiwiZXhwIjoxNzA0ODkwNjg2fQ.zFFDtZA3YXENurpabJkMnVWmBmZDkk1v5AQuB1Ohsec
 
-#### Updatee a specific user
+#### Update a specific user
 PATCH  http://localhost:3000/users/10
 content-type:application/json
 Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsIm5hbWUiOiJBaG1lZCIsInVzZXJuYW1lIjoiRG9sYSIsImVtYWlsIjoiYWhtZWRlbGJpYWx5MTQ4QGdtYWlsLmNvbSIsImlhdCI6MTcwNDgwNDI4NiwiZXhwIjoxNzA0ODkwNjg2fQ.zFFDtZA3YXENurpabJkMnVWmBmZDkk1v5AQuB1Ohsec
@@ -27,7 +27,8 @@ content-type: application/json
     "name":"Ahmed",
     "username":"Dola",
     "email":"ahmedelbialy148@gmail.com",
-    "password":"123456789"
+    "password":"123456789",
+    "role":"user"
 }
 
 #### Login
