@@ -1,6 +1,6 @@
-import { IsEmail, IsString, isStrongPassword } from 'class-validator';
+import { IsEmail, IsEnum, IsString } from 'class-validator';
 import { BeforeInsert, Unique } from 'typeorm';
-
+import { UserRoles } from '../models/user.entity';
 export class CreateUserDto {
   @IsString()
   name: string;
@@ -15,4 +15,8 @@ export class CreateUserDto {
 
   @IsString()
   password: string;
+
+  @IsString()
+  @IsEnum(UserRoles)
+  role: UserRoles;
 }

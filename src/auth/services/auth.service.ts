@@ -1,19 +1,22 @@
 import { JwtService } from '@nestjs/jwt';
-import { UserService } from '../user/services/user.service';
-import { User } from '../user/models/user.entity';
+import { UserService } from '../../user/services/user.service';
+import { User } from '../../user/models/user.entity';
 import {
   BadRequestException,
   NotFoundException,
   Injectable,
   UnauthorizedException,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
-import { clearScreenDown } from 'readline';
 const bcrypt = require('bcrypt');
 
 @Injectable()
 export class AuthService {
   constructor(
     private jwtService: JwtService,
+
+    @Inject(forwardRef(() => UserService))
     private userService: UserService,
   ) {}
 
