@@ -1,10 +1,10 @@
 #### Get all users
-GET http://localhost:3000/users
+GET http://localhost:3000/users?page=1&limit=10
 
 #### Get a specific user
 GET http://localhost:3000/users/16
 content-type: application/json
-Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTYsIm5hbWUiOiJBaG1lZCIsInVzZXJuYW1lIjoiRG9sYSIsImVtYWlsIjoiYWhtZWRlbGJpYWx5MTQ4QGdtYWlsLmNvbSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzA1MDcwMTMyLCJleHAiOjE3MDUxNTY1MzJ9.QYGay59OTmmlbMMzbpYO1kfH8lAVYEhAlTQbkIRmeEA
+Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTYsIm5hbWUiOiJBaG1lZCIsInVzZXJuYW1lIjoiRG9sYSIsImVtYWlsIjoiYWhtZWRlbGJpYWx5MTQ4QGdtYWlsLmNvbSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzA1MTUzMzgwLCJleHAiOjE3MDUyMzk3ODB9.Chw_e4K4Ba_QDen00iBHHPT_SLgWXyGPE9a4QsJJXbY
 
 #### Delete a specific user
 DELETE http://localhost:3000/users/15

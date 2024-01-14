@@ -1,6 +1,8 @@
 import {
+  Controller,
   Body,
   Param,
+  Query,
   Get,
   Post,
   Patch,
@@ -8,8 +10,12 @@ import {
   UseGuards,
   Request,
   ForbiddenException,
+  DefaultValuePipe,
+  ParseIntPipe,
+  Put,
+  BadRequestException,
 } from '@nestjs/common';
-import { Controller } from '@nestjs/common';
+import { Pagination } from 'nestjs-typeorm-paginate';
 import { UserService } from '../services/user.service';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { LoginUserDto } from '../dtos/login-user.dto';
@@ -41,14 +47,29 @@ export class UserController {
     return this.authService.login(body.email, body.password);
   }
 
-  @Get()
-  async findAll() {
-    return this.userService.findAll();
+  // Paggination Route
+  // ex: /users?page=1&limit=10
+  @Get('')
+  async index(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number = 10,
+  ): Promise<Pagination<User>> {
+    limit = limit > 100 ? 100 : limit;
+    const res = await this.userService.paginate({
+      page,
+      limit,
+      route: '/users',
+    });
+    res.items.map((user) => {
+      delete user.password;
+      return user;
+    });
+    console.log(res);
+    return res;
   }
 
   @Get('/:id')
-  @hasRoles(UserRoles.ADMIN, UserRoles.USER)
-  @UseGuards(AuthGuard, RolesGuard)
+  @UseGuards(AuthGuard)
   async findOne(@Param('id') id: string, @Request() req) {
     // Authorization
     if (req.user.id !== parseInt(id)) throw new ForbiddenException();
@@ -56,8 +77,8 @@ export class UserController {
     return req.user;
   }
 
-  @Patch('/:id')
   @UseGuards(AuthGuard)
+  @Patch('/:id')
   updateOne(
     @Param('id') id: string,
     @Body() body: Partial<User>,
@@ -69,10 +90,19 @@ export class UserController {
     return this.userService.updateOne(parseInt(id), body);
   }
 
+  @hasRoles(UserRoles.ADMIN)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Put('/:id/role')
+  updateUserRole(@Param('id') id: string, @Body() body: Partial<User>) {
+    if (!body.role) throw new BadRequestException('New role is required');
+    return this.userService.updateUserRole(parseInt(id), body);
+  }
+
+  @UseGuards(AuthGuard)
   @Delete('/:id')
   deleteOne(@Param('id') id: string, @Request() req) {
     // Authorization
-    // if (req.user.id !== parseInt(id)) throw new ForbiddenException();
+    if (req.user.id !== parseInt(id)) throw new ForbiddenException();
 
     return this.userService.deleteOne(parseInt(id));
   }
