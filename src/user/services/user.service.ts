@@ -6,6 +6,7 @@ import {
   paginate,
   Pagination,
   IPaginationOptions,
+  paginateRaw,
 } from 'nestjs-typeorm-paginate';
 
 @Injectable()
@@ -19,6 +20,19 @@ export class UserService {
 
   async paginate(options: IPaginationOptions): Promise<Pagination<User>> {
     return paginate<User>(this.repo, options);
+  }
+
+  async paginateFilterByUsername(
+    options: IPaginationOptions,
+    username: string,
+  ) {
+    const queryBuilder = this.repo
+      .createQueryBuilder()
+      .select('*')
+      .where('username = :username', { username: username })
+      .orderBy('id', 'ASC');
+
+    return paginateRaw(queryBuilder, options);
   }
 
   async findById(id: number) {

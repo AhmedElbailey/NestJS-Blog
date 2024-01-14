@@ -53,18 +53,27 @@ export class UserController {
   async index(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number = 10,
+    @Query('username') username: string = '',
   ): Promise<Pagination<User>> {
     limit = limit > 100 ? 100 : limit;
-    const res = await this.userService.paginate({
-      page,
-      limit,
-      route: '/users',
-    });
-    res.items.map((user) => {
+    let res: any;
+    if (username) {
+      res = await this.userService.paginateFilterByUsername(
+        { page, limit, route: '/users' },
+        username,
+      );
+    } else {
+      res = await this.userService.paginate({
+        page,
+        limit,
+        route: '/users',
+      });
+    }
+    res.items.map((user: User) => {
       delete user.password;
       return user;
     });
-    console.log(res);
+
     return res;
   }
 
