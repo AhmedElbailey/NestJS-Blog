@@ -19,6 +19,9 @@ export class UserDto {
   role: UserRoles;
 
   @Expose()
+  profileImage: string;
+
+  @Expose()
   @IsOptional()
   access_token: string;
 }

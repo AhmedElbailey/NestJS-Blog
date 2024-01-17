@@ -14,6 +14,9 @@ import {
   ParseIntPipe,
   Put,
   BadRequestException,
+  UseInterceptors,
+  UploadedFile,
+  Res,
 } from '@nestjs/common';
 import { Pagination } from 'nestjs-typeorm-paginate';
 import { UserService } from '../services/user.service';
@@ -27,6 +30,11 @@ import { AuthService } from '../../auth/services/auth.service';
 import { User } from '../models/user.entity';
 import { hasRoles } from '../decorators/roles.decorator';
 import { UserRoles } from '../models/user.entity';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { profileImageStorageOptions } from '../../multer.config';
+import { Express } from 'express';
+import { createReadStream } from 'fs';
+import { join } from 'path';
 
 @Serialize(UserDto)
 @Controller('users')
@@ -63,11 +71,7 @@ export class UserController {
         username,
       );
     } else {
-      res = await this.userService.paginate({
-        page,
-        limit,
-        route: '/users',
-      });
+      res = await this.userService.paginate({ page, limit, route: '/users' });
     }
     res.items.map((user: User) => {
       delete user.password;
@@ -82,8 +86,7 @@ export class UserController {
   async findOne(@Param('id') id: string, @Request() req) {
     // Authorization
     if (req.user.id !== parseInt(id)) throw new ForbiddenException();
-
-    return req.user;
+    return this.userService.findById(parseInt(id));
   }
 
   @UseGuards(AuthGuard)
@@ -114,5 +117,26 @@ export class UserController {
     if (req.user.id !== parseInt(id)) throw new ForbiddenException();
 
     return this.userService.deleteOne(parseInt(id));
+  }
+
+  @Post('/upload')
+  @UseGuards(AuthGuard)
+  @UseInterceptors(FileInterceptor('file', profileImageStorageOptions))
+  uploadFile(@UploadedFile() file: Express.Multer.File, @Request() req) {
+    return this.userService.updateOne(req.user.id, {
+      profileImage: file.filename,
+    });
+  }
+
+  @Get('/profile-image/:imagename')
+  getProfileImage(@Param('imagename') imagename, @Res() res) {
+    return res.sendFile(
+      join(process.cwd(), 'uploads/profileimages/' + imagename),
+    );
+    // another way:
+    // const file = createReadStream(
+    //   join(process.cwd(), 'uploads/profileimages/' + imagename),
+    // );
+    // file.pipe(res);
   }
 }

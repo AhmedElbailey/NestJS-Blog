@@ -23,10 +23,11 @@ export class User {
   @Column()
   password: string;
 
-  // @Column({ type: 'enum', enum: UserRole, default: UserRole.USER })
-  // role: UserRole;
-  @Column({ default: UserRoles.USER })
-  role: string;
+  @Column({ type: 'enum', enum: UserRoles, default: UserRoles.USER })
+  role: UserRoles;
+
+  @Column({ default: null })
+  profileImage: string;
 
   @BeforeInsert()
   emailToLowerCase() {
