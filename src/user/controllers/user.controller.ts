@@ -9,7 +9,6 @@ import {
   Delete,
   UseGuards,
   Request,
-  ForbiddenException,
   DefaultValuePipe,
   ParseIntPipe,
   Put,
@@ -24,7 +23,8 @@ import { CreateUserDto } from '../dtos/create-user.dto';
 import { LoginUserDto } from '../dtos/login-user.dto';
 import { Serialize } from '../../Interceptors/serialize.interceptor';
 import { UserDto } from '../dtos/user.dto';
-import { AuthGuard } from '../../auth/guards/auth.guard';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { UserIsUserGuard } from '../../auth/guards/user-is-user.guard';
 import { RolesGuard } from '../../auth/guards/roles.guard';
 import { AuthService } from '../../auth/services/auth.service';
 import { User } from '../models/user.entity';
@@ -33,7 +33,6 @@ import { UserRoles } from '../models/user.entity';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { profileImageStorageOptions } from '../../multer.config';
 import { Express } from 'express';
-import { createReadStream } from 'fs';
 import { join } from 'path';
 
 @Serialize(UserDto)
@@ -55,8 +54,7 @@ export class UserController {
     return this.authService.login(body.email, body.password);
   }
 
-  // Paggination Route
-  // ex: /users?page=1&limit=10
+  // Paggination Route, ex: /users?page=1&limit=10
   @Get('')
   async index(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
@@ -82,45 +80,33 @@ export class UserController {
   }
 
   @Get('/:id')
-  @UseGuards(AuthGuard)
-  async findOne(@Param('id') id: string, @Request() req) {
-    // Authorization
-    if (req.user.id !== parseInt(id)) throw new ForbiddenException();
+  @UseGuards(JwtAuthGuard, UserIsUserGuard)
+  async findOne(@Param('id') id: string) {
     return this.userService.findById(parseInt(id));
   }
 
-  @UseGuards(AuthGuard)
   @Patch('/:id')
-  updateOne(
-    @Param('id') id: string,
-    @Body() body: Partial<User>,
-    @Request() req,
-  ) {
-    // Authorization
-    if (req.user.id !== parseInt(id)) throw new ForbiddenException();
-
+  @UseGuards(JwtAuthGuard, UserIsUserGuard)
+  updateOne(@Param('id') id: string, @Body() body: Partial<User>) {
     return this.userService.updateOne(parseInt(id), body);
   }
 
-  @hasRoles(UserRoles.ADMIN)
-  @UseGuards(AuthGuard, RolesGuard)
   @Put('/:id/role')
+  @hasRoles(UserRoles.ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   updateUserRole(@Param('id') id: string, @Body() body: Partial<User>) {
     if (!body.role) throw new BadRequestException('New role is required');
     return this.userService.updateUserRole(parseInt(id), body);
   }
 
-  @UseGuards(AuthGuard)
   @Delete('/:id')
-  deleteOne(@Param('id') id: string, @Request() req) {
-    // Authorization
-    if (req.user.id !== parseInt(id)) throw new ForbiddenException();
-
+  @UseGuards(JwtAuthGuard, UserIsUserGuard)
+  deleteOne(@Param('id') id: string) {
     return this.userService.deleteOne(parseInt(id));
   }
 
   @Post('/upload')
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('file', profileImageStorageOptions))
   uploadFile(@UploadedFile() file: Express.Multer.File, @Request() req) {
     return this.userService.updateOne(req.user.id, {
@@ -133,10 +119,11 @@ export class UserController {
     return res.sendFile(
       join(process.cwd(), 'uploads/profileimages/' + imagename),
     );
-    // another way:
-    // const file = createReadStream(
-    //   join(process.cwd(), 'uploads/profileimages/' + imagename),
-    // );
-    // file.pipe(res);
   }
 }
+
+// Another way for serving invoices:
+// const file = createReadStream(
+//   join(process.cwd(), 'uploads/profileimages/' + imagename),
+// );
+// file.pipe(res);
