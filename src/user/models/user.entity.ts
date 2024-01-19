@@ -1,4 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  BeforeInsert,
+  OneToMany,
+} from 'typeorm';
+import { BlogEntry } from '../../blog/models/blog-entry.entity';
 export enum UserRoles {
   ADMIN = 'admin',
   USER = 'user',
@@ -6,7 +13,7 @@ export enum UserRoles {
   CHIEFEDITOR = 'chiefeditor',
 }
 
-@Entity()
+@Entity('users')
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
@@ -28,6 +35,9 @@ export class User {
 
   @Column({ default: null })
   profileImage: string;
+
+  @OneToMany(() => BlogEntry, (blogEntry) => blogEntry.author)
+  blogEntries: BlogEntry[];
 
   @BeforeInsert()
   emailToLowerCase() {
