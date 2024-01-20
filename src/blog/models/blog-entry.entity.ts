@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 
 @Entity('blog_entries')
-export class BlogEntry {
+export class BlogEntryEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -24,27 +24,29 @@ export class BlogEntry {
   @Column({ default: '' })
   body: string;
 
+  @Column({ default: 0 })
+  likes: number;
+
+  @Column({ nullable: true })
+  headerImage: string;
+
+  @Column({ nullable: true })
+  publishedDate: Date;
+
+  @Column({ default: false })
+  isPublished: Boolean;
+
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Date;
 
-  @Column()
-  likes: number;
-
-  @Column()
-  headerImage: string;
-
-  @Column()
-  publishedDate: Date;
-
-  @Column()
-  isPublished: Boolean;
-
   @ManyToOne(() => User, (user) => user.blogEntries)
   author: User;
 
+  //////////////////////////////////////
+  // Hooks /////////////////////////////
   @BeforeUpdate()
   updateTimeStamp() {
     this.updated_at = new Date();

@@ -1,4 +1,4 @@
-import { IsEmail, IsEnum, IsString } from 'class-validator';
+import { IsEmail, IsEnum, IsOptional, IsString } from 'class-validator';
 import { BeforeInsert, Unique } from 'typeorm';
 import { UserRoles } from '../models/user.entity';
 export class CreateUserDto {
@@ -17,6 +17,7 @@ export class CreateUserDto {
   password: string;
 
   @IsString()
+  @IsOptional()
   @IsEnum(UserRoles)
   role: UserRoles;
 }

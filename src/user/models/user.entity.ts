@@ -5,7 +5,8 @@ import {
   BeforeInsert,
   OneToMany,
 } from 'typeorm';
-import { BlogEntry } from '../../blog/models/blog-entry.entity';
+import { BlogEntryEntity } from '../../blog/models/blog-entry.entity';
+import { Exclude } from 'class-transformer';
 export enum UserRoles {
   ADMIN = 'admin',
   USER = 'user',
@@ -27,7 +28,7 @@ export class User {
   @Column({ unique: true })
   email: string;
 
-  @Column()
+  @Column({ select: false })
   password: string;
 
   @Column({ type: 'enum', enum: UserRoles, default: UserRoles.USER })
@@ -36,9 +37,11 @@ export class User {
   @Column({ default: null })
   profileImage: string;
 
-  @OneToMany(() => BlogEntry, (blogEntry) => blogEntry.author)
-  blogEntries: BlogEntry[];
+  @OneToMany(() => BlogEntryEntity, (blogEntry) => blogEntry.author)
+  blogEntries: BlogEntryEntity[];
 
+  //////////////////////////////////////
+  // Hooks /////////////////////////////
   @BeforeInsert()
   emailToLowerCase() {
     this.email = this.email.toLowerCase();
