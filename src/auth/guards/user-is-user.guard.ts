@@ -19,11 +19,11 @@ export class UserIsUserGuard implements CanActivate {
   ): boolean | Promise<boolean> | Observable<boolean> {
     const request = context.switchToHttp().getRequest();
     const params = request.params;
-    const user = request.user;
+    const userData = request.user;
 
     //   User must be authenticated
-    if (!user) throw new UnauthorizedException();
+    if (!userData) throw new UnauthorizedException();
 
-    return user.id === Number(params.id);
+    return userData.id === Number(params.id);
   }
 }

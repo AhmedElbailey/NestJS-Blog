@@ -35,6 +35,10 @@ export class BlogEntryDto {
   @Expose()
   updated_at: Date;
 
+  @Transform(({ obj }) => {
+    delete obj.author.password;
+    return obj.author;
+  })
   @Expose()
-  author: User;
+  author: Partial<User>;
 }

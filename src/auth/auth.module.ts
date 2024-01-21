@@ -4,9 +4,10 @@ import { UserModule } from '../user/user.module';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RolesGuard } from './guards/roles.guard';
 import { UserIsUserGuard } from './guards/user-is-user.guard';
+import { BlogModule } from '../blog/blog.module';
 
 @Module({
-  imports: [forwardRef(() => UserModule)],
+  imports: [forwardRef(() => UserModule), forwardRef(() => BlogModule)],
   providers: [AuthService, JwtAuthGuard, RolesGuard, UserIsUserGuard],
   exports: [AuthService],
 })

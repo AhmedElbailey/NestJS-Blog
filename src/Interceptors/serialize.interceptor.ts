@@ -23,7 +23,8 @@ class SerializeInterceptor implements NestInterceptor {
   ): Observable<any> | Promise<Observable<any>> {
     // Check excluded routes
     const request = context.switchToHttp().getRequest();
-    const excludeSerialization = request.route.path === '/users';
+    const path = request.route.path;
+    const excludeSerialization = path === '/users' || path === '/blog-entries';
     return handler.handle().pipe(
       map((data: any) => {
         // Clause guard for skipping the serialization
