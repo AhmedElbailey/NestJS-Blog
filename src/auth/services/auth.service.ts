@@ -47,9 +47,12 @@ export class AuthService {
     const doMatch = await bcrypt.compare(password, user.password);
     if (!doMatch) throw new UnauthorizedException('Wrong Password!');
 
-    // Generate a JWT with all user data except password
+    // Generate a JWT with payload of user id and role
     delete user.password;
-    let token = await this.jwtService.signAsync({ ...user });
+    let token = await this.jwtService.signAsync({
+      id: user.id,
+      role: user.role,
+    });
     return { access_token: token };
   }
 }

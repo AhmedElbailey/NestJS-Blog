@@ -8,6 +8,7 @@ import { APP_PIPE } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
+import { BlogModule } from './blog/blog.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { AuthModule } from './auth/auth.module';
     }),
     UserModule,
     AuthModule,
+    BlogModule,
   ],
 
   controllers: [AppController],
