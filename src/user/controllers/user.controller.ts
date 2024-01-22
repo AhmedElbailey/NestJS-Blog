@@ -44,9 +44,13 @@ export class UserController {
   ) {}
 
   @Post('/signup')
-  async signup(@Body() body: CreateUserDto) {
-    const user = await this.authService.signup(body);
-    return user;
+  async signupAsUser(@Body() body: CreateUserDto) {
+    return this.authService.signup(body);
+  }
+
+  @Post('/admin/signup')
+  async signupAsAdmin(@Body() body: CreateUserDto) {
+    return this.authService.signup(body, true);
   }
 
   @Post('/login')

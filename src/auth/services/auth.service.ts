@@ -20,7 +20,7 @@ export class AuthService {
     private userService: UserService,
   ) {}
 
-  async signup(userData: Partial<User>) {
+  async signup(userData: Partial<User>, isAdmin = false) {
     // Check existing email
     const exist = await this.userService.findByEmail(userData.email);
     if (exist) throw new BadRequestException('Email already exists');
@@ -29,13 +29,17 @@ export class AuthService {
     const hashedPassword = await bcrypt.hash(userData.password, 12);
 
     // Create a new user and save him
-    const user = await this.userService.insertOne({
-      ...userData,
-      password: hashedPassword,
-    });
-
-    // return the user
-    return user;
+    if (isAdmin) {
+      return this.userService.insertOneAsAdmin({
+        ...userData,
+        password: hashedPassword,
+      });
+    } else {
+      return this.userService.insertOneAsUser({
+        ...userData,
+        password: hashedPassword,
+      });
+    }
   }
 
   async login(email: string, password: string) {

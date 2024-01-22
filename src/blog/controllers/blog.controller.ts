@@ -107,7 +107,3 @@ export class BlogController {
     );
   }
 }
-
-// return this.blogService.updateOne(req.user.id, {
-//   headerImage: file.filename,
-// });

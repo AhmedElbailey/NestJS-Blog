@@ -13,8 +13,13 @@ import {
 export class UserService {
   constructor(@InjectRepository(User) private repo: Repository<User>) {}
 
-  insertOne(userData: Object) {
+  insertOneAsUser(userData: Object) {
     const user = this.repo.create({ ...userData, role: UserRoles.USER });
+    return this.repo.save(user);
+  }
+
+  insertOneAsAdmin(userData: Object) {
+    const user = this.repo.create({ ...userData, role: UserRoles.ADMIN });
     return this.repo.save(user);
   }
 
@@ -64,6 +69,7 @@ export class UserService {
   }
 
   deleteOne(id: number) {
+    console.log(id);
     return this.repo.delete({ id });
   }
 }
