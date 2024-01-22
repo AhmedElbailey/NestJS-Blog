@@ -8,9 +8,12 @@ import {
   Post,
   Query,
   Request,
+  Res,
   UseGuards,
   DefaultValuePipe,
   ParseIntPipe,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { BlogService } from '../services/blog.service';
 import { BlogEntryEntity } from '../models/blog-entry.entity';
@@ -20,6 +23,11 @@ import { UserIsAuthorGuard } from '../../auth/guards/user-is-author.guard';
 import { Serialize } from '../../Interceptors/serialize.interceptor';
 import { BlogEntryDto } from '../dtos/blog-entry.dto';
 import { Pagination } from 'nestjs-typeorm-paginate';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { blogEntryImageStorageOptions } from '../../multer.config';
+import { ImageDto } from '../dtos/image.dto';
+import { join } from 'path';
+
 @Serialize(BlogEntryDto)
 @Controller('blog-entries')
 export class BlogController {
@@ -77,4 +85,29 @@ export class BlogController {
   deleteOne(@Param('id') id: string) {
     return this.blogService.deleteOne(parseInt(id));
   }
+
+  @Post('/image/upload/:blogEntryId')
+  @Serialize(ImageDto)
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FileInterceptor('file', blogEntryImageStorageOptions))
+  async uploadFile(
+    @UploadedFile() file: Express.Multer.File,
+    @Param('blogEntryId') blogEntryId: string,
+  ) {
+    await this.blogService.updateOne(Number(blogEntryId), {
+      headerImage: file.filename,
+    });
+    return file;
+  }
+
+  @Get('/image/:imagename')
+  getProfileImage(@Param('imagename') imagename, @Res() res) {
+    return res.sendFile(
+      join(process.cwd(), 'uploads/blog-entry-images/' + imagename),
+    );
+  }
 }
+
+// return this.blogService.updateOne(req.user.id, {
+//   headerImage: file.filename,
+// });
