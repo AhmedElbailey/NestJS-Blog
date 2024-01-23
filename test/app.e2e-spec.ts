@@ -171,7 +171,6 @@ describe('User Service', () => {
       .then((res) => {
         expect(res.body.items.length).toBeGreaterThan(0);
         const user = res.body.items[0];
-        console.log(user.id);
         Object.assign(userData, user);
       });
     await request(app.getHttpServer())
@@ -180,7 +179,6 @@ describe('User Service', () => {
       .then((res) => {
         expect(res.body.items.length).toBeGreaterThan(0);
         const admin = res.body.items[0];
-        console.log(admin.id);
         Object.assign(adminData, admin);
       });
   });
