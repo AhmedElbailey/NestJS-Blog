@@ -101,7 +101,7 @@ export class BlogController {
   }
 
   @Get('/image/:imagename')
-  getProfileImage(@Param('imagename') imagename, @Res() res) {
+  getBlogEntryImage(@Param('imagename') imagename, @Res() res) {
     return res.sendFile(
       join(process.cwd(), 'uploads/blog-entry-images/' + imagename),
     );
